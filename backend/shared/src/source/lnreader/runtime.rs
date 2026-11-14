@@ -692,14 +692,14 @@ fn decode_bytes(bytes: &[u8], encoding: &str) -> Result<String> {
         "" | "utf-8" | "utf8" => Ok(String::from_utf8_lossy(bytes).into_owned()),
         "utf-16le" | "utf16le" | "unicode" => {
             let mut u16s = Vec::with_capacity(bytes.len() / 2);
-            for chunk in bytes.chunks_exact(2) {
+            for chunk in bytes.as_chunks::<2>().0 {
                 u16s.push(u16::from_le_bytes([chunk[0], chunk[1]]));
             }
             Ok(String::from_utf16_lossy(&u16s))
         }
         "utf-16be" | "utf16be" => {
             let mut u16s = Vec::with_capacity(bytes.len() / 2);
-            for chunk in bytes.chunks_exact(2) {
+            for chunk in bytes.as_chunks::<2>().0 {
                 u16s.push(u16::from_be_bytes([chunk[0], chunk[1]]));
             }
             Ok(String::from_utf16_lossy(&u16s))
