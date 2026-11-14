@@ -144,6 +144,7 @@ end
 ---@field private outputCapturer SubprocessOutputCapturer
 ---@field private logBuffer string[]
 ---@field private disable_logging boolean
+---@field private dead boolean
 local UnixServer = {}
 
 function UnixServer:new(pid, outputCapturer)
@@ -155,12 +156,40 @@ function UnixServer:new(pid, outputCapturer)
     logBuffer = {},
     maxLogLines = 100,
     disable_logging = disable_logging,
+    dead = false,
   }
   setmetatable(server, { __index = UnixServer })
 
   server:startLogCapture()
 
   return server
+end
+
+--- Returns true if the backend subprocess is still alive.
+---
+--- Probes with `kill(pid, 0)`, which reports liveness without reaping the
+--- child. Reaping is left to `stop()`, so the PID is never released for reuse
+--- while we might still act on it.
+---@return boolean
+function UnixServer:isAlive()
+  if self.dead then
+    return false
+  end
+  if self.pid == nil then
+    return false
+  end
+  -- A zombie still counts as present here; the EOF callback and stop() are
+  -- what mark the server dead definitively.
+  if C.kill(self.pid, 0) == 0 then
+    return true
+  end
+  self.dead = true
+  return false
+end
+
+---@return boolean dead Whether the backend was already known dead.
+function UnixServer:isDead()
+  return self.dead == true
 end
 
 function UnixServer:getLogBuffer()
@@ -255,6 +284,15 @@ function UnixServer:stop()
   local done = ffiutil.isSubProcessDone(self.pid, true)
 
   logger.info("Subprocess finished:", done)
+
+  -- Unlink the socket file so a stale socket does not linger on disk after
+  -- the server process is gone (the next request would get ECONNREFUSED).
+  if SOCKET_PATH then
+    local ok, err = os.remove(SOCKET_PATH)
+    if not ok then
+      logger.warn("Failed to unlink socket", SOCKET_PATH, err)
+    end
+  end
 end
 
 function UnixServer:startLogCapture()
@@ -263,7 +301,12 @@ function UnixServer:startLogCapture()
     self:handleLogOutput(contents)
   end
 
-  self.outputCapturer:periodicallyPipeOutput(onOutput, onOutput)
+  local onEof = function(stream_name)
+    logger.warn("Server output pipe closed (" .. stream_name .. "); backend likely exited")
+    self.dead = true
+  end
+
+  self.outputCapturer:periodicallyPipeOutput(onOutput, onOutput, onEof)
 end
 
 function UnixServer:flushLogBuffer()
@@ -272,7 +315,12 @@ function UnixServer:flushLogBuffer()
     self:handleLogOutput(contents)
   end
 
-  self.outputCapturer:pipeOutput(onOutput, onOutput)
+  local onEof = function(stream_name)
+    logger.warn("Server output pipe closed (" .. stream_name .. "); backend likely exited")
+    self.dead = true
+  end
+
+  self.outputCapturer:pipeOutput(onOutput, onOutput, onEof)
 end
 
 function UnixServer:handleLogOutput(contents)
