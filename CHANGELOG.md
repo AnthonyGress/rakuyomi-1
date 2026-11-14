@@ -1,3 +1,10 @@
+## [1.43.5](https://github.com/yuuki-kagura/rakuyomi/compare/v1.43.4...v1.43.5) (2026-11-14)
+
+
+### Bug Fixes
+
+* recover from a silently dead backend and stop leaking temp files ([8be3a90](https://github.com/yuuki-kagura/rakuyomi/commit/8be3a90fd432ff300a2c608e4e5d41cdd490456a))
+
 ## [1.43.4](https://github.com/yuuki-kagura/rakuyomi/compare/v1.43.3...v1.43.4) (2026-11-14)
 
 
