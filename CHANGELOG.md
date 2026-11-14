@@ -1,3 +1,16 @@
+## [1.43.4](https://github.com/yuuki-kagura/rakuyomi/compare/v1.43.3...v1.43.4) (2026-11-14)
+
+
+### Bug Fixes
+
+* **ci:** use macos-latest for the macOS build job ([85e3b78](https://github.com/yuuki-kagura/rakuyomi/commit/85e3b7815efe2750b157955e1f5689e5ac99cb6e))
+* trigger release ([17c7c96](https://github.com/yuuki-kagura/rakuyomi/commit/17c7c9615b532e46f7847860259b847da22314b0))
+
+
+### Performance Improvements
+
+* **cookie-bot:** stop registering bot commands on every cold isolate ([30d8002](https://github.com/yuuki-kagura/rakuyomi/commit/30d80029c0566587edc415dd23a57561d948a720))
+
 ## [1.43.3](https://github.com/tachibana-shin/rakuyomi/compare/v1.43.2...v1.43.3) (2026-10-10)
 
 
