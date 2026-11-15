@@ -1,3 +1,10 @@
+## [1.43.6](https://github.com/yuuki-kagura/rakuyomi/compare/v1.43.5...v1.43.6) (2026-11-15)
+
+
+### Bug Fixes
+
+* make backend socket-error detection actually match ([6c78036](https://github.com/yuuki-kagura/rakuyomi/commit/6c780369280db27d05fb7c10ac565430e694f05d))
+
 ## [1.43.5](https://github.com/yuuki-kagura/rakuyomi/compare/v1.43.4...v1.43.5) (2026-11-14)
 
 
