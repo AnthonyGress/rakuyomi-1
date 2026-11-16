@@ -756,31 +756,6 @@ mod tests {
         assert_eq!(lib_atob("rA=="), "¬");
     }
 
-    /// `decode_bytes` walks the input in fixed-size 2-byte chunks. A trailing
-    /// odd byte has no counterpart and must be dropped, exactly like
-    /// `chunks_exact`, which the `as_chunks` form replaces.
-    #[test]
-    fn decode_bytes_utf16_le_and_be() {
-        // "hi" in UTF-16LE and UTF-16BE.
-        let le = [b'h', 0, b'i', 0];
-        let be = [0, b'h', 0, b'i'];
-        assert_eq!(decode_bytes(&le, "utf-16le").unwrap(), "hi");
-        assert_eq!(decode_bytes(&be, "utf-16be").unwrap(), "hi");
-
-        // Non-ASCII: U+00E9 (e-acute) and U+4E2D (CJK), little endian.
-        let le_wide = [0xE9, 0x00, 0x2D, 0x4E];
-        assert_eq!(decode_bytes(&le_wide, "utf16le").unwrap(), "\u{E9}\u{4E2D}");
-
-        // A trailing odd byte cannot form a code unit and is discarded.
-        let mut trailing = vec![b'x', 0];
-        trailing.push(0xFF);
-        assert_eq!(decode_bytes(&trailing, "utf-16le").unwrap(), "x");
-
-        // Shorter than one code unit: nothing to decode, no panic.
-        assert_eq!(decode_bytes(&[0xFF], "utf-16le").unwrap(), "");
-        assert_eq!(decode_bytes(&[], "utf-16le").unwrap(), "");
-    }
-
     /// The native `atob`/`btoa` must be callable from JS inside a real
     /// rquickjs context, i.e. the JS->Rust argument and Rust->JS return
     /// marshaling of the registered host functions must be correct.

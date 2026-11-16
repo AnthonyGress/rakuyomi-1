@@ -96,11 +96,8 @@ function Backend.requestJson(request)
     -- (e.g. OOM-killed). Detect it, log the real cause, and restart once
     -- transparently instead of degrading into silent failures.
     local msg = response.message or ""
-    -- Messages are built as "connect(): <reason>" / "socket(): <reason>". The
-    -- literal parentheses must be balanced in the pattern, otherwise Lua reads
-    -- them as an unterminated capture and the match never fires.
-    local is_socket_error = msg:find("^connect%(%)%:") ~= nil
-        or msg:find("^socket%(%)%:") ~= nil
+    local is_socket_error = msg:find("^connect%(%:)") ~= nil
+        or msg:find("^socket%(%:)") ~= nil
 
     if is_socket_error and not request._backend_retried then
       logger.warn("backend request failed (socket error), restarting backend:",
