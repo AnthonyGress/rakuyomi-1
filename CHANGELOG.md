@@ -1,3 +1,10 @@
+## [1.43.7](https://github.com/yuuki-kagura/rakuyomi/compare/v1.43.6...v1.43.7) (2026-11-16)
+
+
+### Bug Fixes
+
+* revert 6c780369280db27d05fb7c10ac565430e694f05d ([eedf8e9](https://github.com/yuuki-kagura/rakuyomi/commit/eedf8e90a74fcbbeb28726e2ec47fe16d99b2aa6))
+
 ## [1.43.6](https://github.com/yuuki-kagura/rakuyomi/compare/v1.43.5...v1.43.6) (2026-11-15)
 
 
